@@ -270,3 +270,114 @@ then remove or disable the 500 ms delays and temporary raw UART tests. Keep
 the useful error handling and a minimal optional checkpoint mode in a separate
 debug configuration. Rebuild and compare the normal image against the saved
 baseline before considering the work complete.
+
+## Plan update — 2026-10-09 21:34 CEST (Europe/Amsterdam)
+
+### Update policy and authorization
+
+- Append each subsequent plan update at the end of this file with its local
+  date/time, the change or finding, and the actual result, including pending
+  validation. Preserve earlier entries as history; the latest explicit
+  correction takes precedence over conflicting earlier statements.
+- Only this documentation update is authorized now. Implementation, source
+  synchronization, configuration changes, builds, and commits remain on hold
+  until the user confirms starting the baseline-first sequence.
+- The earlier statement that implementation is in progress describes prior
+  work, not authorization to resume it in this session.
+
+### Corrected observations and logging requirements
+
+- The user reports that the current development image has **no VGA output**.
+  Existing instrumentation and earlier implementation notes do not establish
+  that VGA works. The separate `/home/uefi/workspace/coreboot` reference is
+  reported to display VGA output and reach DXE; do not conflate these images.
+- The user reports that current serial/SOL output is **not limited to errors**.
+  Record observed output separately from configured filters. The current
+  `.config` passes `0x80000000` for both EDK2 debug-level PCDs, but this does
+  not prove that every serial/SOL output path honors those filters.
+- Keep broader serial/SOL visibility and emit our custom EDK2 diagnostics
+  through the serial debug path at `DEBUG_ERROR` level. Custom checkpoint
+  coverage must include SEC/SecCore, PEI entry, PeiCore and PEIM entry/dispatch,
+  SmmStore and related variable/FTW paths, DXE IPL, DXE Core and dispatch, and
+  the boot-manager/shell handoff. A `DEBUG_ERROR` checkpoint is an intentional
+  diagnostic marker, not necessarily a reported firmware failure.
+- The earlier error-only serial acceptance criterion is superseded by this
+  update. After implementation is authorized, verify the actual libraries,
+  filters, UART routing, and any direct serial writes against captured SOL
+  output; do not claim successful logging from PCD settings alone.
+
+### Baseline-first implementation sequence — pending confirmation
+
+1. Use `/home/uefi/workspace/coreboot` as the reference. Its inspected coreboot
+   HEAD is `0175444e946cc7f595d7f8bba770b038a118954d`; its configured payload
+   checkout, `payloads/external/edk2/workspace/mahdi-sahebi`, is at
+   `ec1955278bd437aaea828f1217bfcab9b396a6e8`. Capture all effective build
+   inputs, dependency revisions, local files, and toolchain details before
+   synchronization, including any ignored files used by the build.
+2. Match `/home/uefi/workspace/uefi_edk2` to the reference EDK2 source and
+   dependencies, and create the EDK2 baseline commit first. Preserve existing
+   history. Do not add shell fixes or new instrumentation to this baseline.
+3. Match `/home/uefi/workspace/test/uefi_coreboot` to the reference coreboot
+   source, configuration, and dependencies, then synchronize its EDK2 payload
+   checkout to the exact new EDK2 baseline commit. Document any necessary
+   revision-pinning or local-path differences from the reference explicitly.
+4. Bring the reference `doc/` content and relevant `logs/` text and pictures
+   into the current project's `doc/`, including the Claude reports. Exclude
+   firmware dumps, binary build artifacts, archives, and movies from this
+   documentation import. Preserve existing local documentation and do not
+   import the reference `.gitignore`.
+5. The proposed baseline plan includes the board's required `descriptor.bin`
+   and `me.bin` as explicit exceptions to the binary-copy exclusion; this
+   interpretation was included in the pending confirmation request. Verify
+   their hashes and build paths against the reference.
+6. Create the coreboot baseline commit with exactly the same full commit
+   message as the EDK2 baseline commit:
+   `baseline: reproduce reference VGA output and DXE handoff`.
+   Record both resulting commit hashes and the exact payload revision used by
+   coreboot. The repositories will have different commit hashes.
+7. Verify source/input equality, build the paired baseline, and inspect the
+   payload and ROM. Record image hashes, build commands, and any remaining
+   differences. Identical boot behavior and VGA output remain unverified until
+   a corresponding hardware run is captured; compilation is insufficient.
+8. Only after preserving the paired baseline, read the complete Claude
+   analysis, correlate it with the actual source and latest boot evidence,
+   diagnose missing VGA and the unreachable UEFI Shell, and make subsequent
+   fixes in separate commits. Both inspected configs already enable
+   `CONFIG_EDK2_HAVE_EFI_SHELL`; inclusion alone does not prove launchability.
+9. After every EDK2 update, commit in `/home/uefi/workspace/uefi_edk2`, pull or
+   fetch that development branch into the current coreboot payload checkout,
+   and select and verify the exact intended commit. Record the paired revision
+   in coreboot so a moving branch cannot silently change a reproducible build.
+   Use identical full commit messages for corresponding EDK2/coreboot pairs.
+
+### Result
+
+Plan updated by appending this entry only. No firmware source, configuration,
+dependency checkout, or Git history was changed; no build, flash, or hardware
+test was performed. The reference Claude report directory and the current
+`doc/reports/claude/` were compared and are byte-for-byte identical. Full
+analysis review, baseline reproduction, VGA recovery, SOL verification, and
+shell diagnosis/fixes are pending implementation confirmation. Current absence
+of VGA and the serial/SOL behavior above are user-reported observations.
+
+## Plan update — 2026-10-09 21:45 CEST (Europe/Amsterdam)
+
+The user authorized implementation. The reference-first sequence is now active.
+Backup branches preserve both previous development tips. The EDK2 baseline
+commit is `2c42a878f26d7078b54fe83ece24bb57f87d3020`; its complete Git tree
+matches the reference `ec1955278bd437aaea828f1217bfcab9b396a6e8` exactly.
+Coreboot source and dependency revisions have been restored to the reference.
+The copied DasharoPayloadPkg was restored as required by the user's explicit
+reference-matching request, which supersedes the earlier blanket prohibition
+on replacing that package. Subsequent functional edits still require evidence.
+
+The active EDK2 checkout and `.config` now pin the paired EDK2 commit. The
+reference descriptor and ME contents are included as tracked board inputs;
+only paths and dependency pins differ in the baseline configuration. Text and
+pictures from reference logs were copied into `doc/`, excluding new binary,
+archive, and movie imports. Existing project documentation remains preserved.
+
+Result: EDK2 baseline committed and content equality verified; coreboot baseline
+prepared for its matching commit and clean build. See `reference-baseline.md`
+for input hashes, provenance, reproduction instructions, and metadata limits.
+No runtime fix has been introduced and no hardware has been flashed.

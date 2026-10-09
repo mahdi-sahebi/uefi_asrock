@@ -28,6 +28,7 @@ endif
 OBJCOPY = $(GCC_PREFIX)objcopy
 
 PAYLOAD_NAME=DasharoPayloadPkg
+PAYLOAD_OUTPUT ?= ../../../build/UEFIPAYLOAD.fd
 
 ifeq ($(CONFIG_EDK2_UEFIPAYLOAD),y)
 BUILD_STR += -p $(PAYLOAD_NAME)/$(PAYLOAD_NAME).dsc
@@ -515,7 +516,7 @@ $(EDK2_PATH): $(WORKSPACE)
 		if git status --ignore-submodules=dirty | grep -q -e clean -e "nothing added"; then \
 			echo "    Checking out $(project_name) revision $(CONFIG_EDK2_TAG_OR_REV)"; \
 			git checkout --detach $(CONFIG_EDK2_TAG_OR_REV) -f; \
-			git submodule update --checkout --recursive; \
+			git submodule update --checkout; \
 		else \
 			echo "    Working directory not clean; will not overwrite"; \
 		fi; \
@@ -640,8 +641,9 @@ $(WORKSPACE)/Build/$(PAYLOAD_NAME)X64/$(RELEASE_STR)_COREBOOT/IA32/$(PAYLOAD_NAM
 			-y $(WORKSPACE)/Build/$(PAYLOAD_NAME)X64/ShimLayer.txt
 
 $(PAYLOAD_NAME): $(WORKSPACE)/Build/$(PAYLOAD_NAME)X64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd
+	mkdir -p $(dir $(PAYLOAD_OUTPUT))
 	mv $(WORKSPACE)/Build/$(PAYLOAD_NAME)X64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd \
-		../../../build/UEFIPAYLOAD.fd
+		$(PAYLOAD_OUTPUT)
 
 UniversalPayload: $(WORKSPACE)/Build/$(PAYLOAD_NAME)X64/$(RELEASE_STR)_COREBOOT/IA32/$(PAYLOAD_NAME)/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll
 	mv $(WORKSPACE)/Build/$(PAYLOAD_NAME)X64/$(RELEASE_STR)_COREBOOT/IA32/$(PAYLOAD_NAME)/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll \

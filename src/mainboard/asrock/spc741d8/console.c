@@ -4,5 +4,5 @@
 
 int get_console_loglevel(void)
 {
-	return BIOS_ERR;
+	return BIOS_DEBUG;
 }

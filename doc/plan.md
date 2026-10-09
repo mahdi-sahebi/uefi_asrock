@@ -381,3 +381,77 @@ Result: EDK2 baseline committed and content equality verified; coreboot baseline
 prepared for its matching commit and clean build. See `reference-baseline.md`
 for input hashes, provenance, reproduction instructions, and metadata limits.
 No runtime fix has been introduced and no hardware has been flashed.
+
+## Plan update — 2026-10-09 21:54 CEST (Europe/Amsterdam)
+
+Result: paired baseline commits are preserved: EDK2 `2c42a878f26d` and coreboot
+`34ed879d4c71`, both with the agreed identical message. A fresh EDK2 payload
+and a 64 MiB coreboot ROM were built; hashes and build-path caveats are recorded
+in `reference-baseline.md`. No hardware execution is claimed.
+
+The complete six-file Claude analysis was read. Its claims refer to older
+revisions and contain inconsistent SMMSTORE status descriptions; the actual
+reference config enables SMMSTORE and the stored SOL trace shows valid geometry.
+Current source inspection found concrete additional blockers:
+
+- DXE's first diagnostic checkpoint calls TimerLib before its HOB services and
+  library constructors are ready.
+- The ACPI timer constructor assumes an existing HOB list already contains the
+  ACPI board HOB, which a later PEIM actually creates.
+- FTW diagnostics dereference the deliberately NULL interface of a signal PPI;
+  lookup/conversion errors and spare-scan bounds also need guards.
+- Early PEI/FTW debug delays run hundreds of millions/billions of iterations;
+  SEC uses a null DebugLib, suppressing its custom serial diagnostics.
+- The payload build recipe writes to `build/` regardless of `obj`, allowing an
+  alternate-output build to embed a stale payload unless explicitly corrected.
+
+Fixes are being prepared in a separate commit pair. Early PEI and pre-constructor
+DXE markers must not depend on an unavailable timer; calibrated DXE delays are
+retained after constructors. This supersedes the unconditional early-checkpoint
+delay requirement. Custom markers use DEBUG_ERROR alongside broader normal
+bring-up logging. Host regression checks of actual guard functions pass for
+native X64 and simulated IA32 address-width geometry; full firmware build and
+VGA/SOL/shell validation of the fixes are pending.
+
+## Plan update — 2026-10-09 21:54 CEST (Europe/Amsterdam)
+
+Synchronized EDK2 branch `feature/vga` from `/home/uefi/workspace/uefi_edk2`.
+Result: payload HEAD and `.config` select `5b0e13cd9ec781ac81c34d9ed4752d8f02d0206c`.
+Build, hardware validation, and the matching coreboot commit are pending.
+
+## Plan update — 2026-10-10 03:14 CEST (Europe/Amsterdam)
+
+The paired fix implementation and local verification are complete. EDK2 commit
+`2646640ee3919f57c675ee90f670b63d7756271d` and the corresponding coreboot
+commit use the identical message `fix: unblock PEI/DXE diagnostics and preserve
+SOL visibility`. Coreboot pins that exact EDK2 revision in both `.config` and
+the payload gitlink.
+
+Result: the host regression test passes for native X64 and simulated IA32
+address arithmetic. The full EDK2 and coreboot builds complete without compiler
+or linker errors. The resulting 64 MiB image contains a 1,280,517-byte payload,
+the expected FSP and microcode files, descriptor and ME regions, and a preserved
+256 KiB SMMSTORE region. The built payload contains the UEFI Shell application
+GUID `7C04A583-9E3E-4F1C-AD65-E05268D0B4D1`.
+
+The completed pre-final-commit artifacts were:
+
+- `build/shell-fix/UEFIPAYLOAD.fd`:
+  `b76ce84fabe0c1da56a1feb4e529b2221efe7492c8ddd0f5478c043a11dba61f`
+- `build/shell-fix/coreboot.rom`:
+  `812ecb73a63489bc3b74dc1600691b0e784ae6331a08148b296c6a85f7615f6c`
+
+The build reports clock skew because generated dependency files have timestamps
+in the future relative to the execution clock. No build failure resulted, but
+a final rebuild is required after this documentation is committed so embedded
+Git metadata corresponds to the final coreboot commit. The diagnosis and exact
+hardware validation procedure are recorded in
+`doc/2026-10-09-shell-diagnosis.md`. VGA, SOL progression, boot-menu access,
+and an interactive shell remain pending a real board flash and capture; they
+are not claimed from static inspection or build success.
+
+## Plan update — 2026-10-09 21:56 CEST (Europe/Amsterdam)
+
+Synchronized EDK2 branch `feature/vga` from `/home/uefi/workspace/uefi_edk2`.
+Result: payload HEAD and `.config` select `2646640ee3919f57c675ee90f670b63d7756271d`.
+Build, hardware validation, and the matching coreboot commit are pending.

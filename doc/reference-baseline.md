@@ -46,7 +46,12 @@ SHA-256 inputs:
 Use the reference toolchain, not the newer compiler build in this checkout:
 
 ```sh
+make -j8 obj=build/reference-baseline build/reference-baseline/UEFIPAYLOAD.fd \
+  XGCCPATH=/home/uefi/workspace/coreboot/util/crossgcc/xgcc/bin/
+# The baseline recipe writes to build/ even when obj points elsewhere.
+cp -p build/UEFIPAYLOAD.fd build/reference-baseline/UEFIPAYLOAD.fd
 make -j8 obj=build/reference-baseline \
+  CONFIG_PAYLOAD_FILE=build/reference-baseline/UEFIPAYLOAD.fd \
   XGCCPATH=/home/uefi/workspace/coreboot/util/crossgcc/xgcc/bin/
 ```
 
@@ -69,3 +74,25 @@ because the baseline compiles.
 Previous local EDK2 build output and no-longer-referenced AMD submodule
 directories are retained under `.git/baseline-backup-20261009/`; no reference
 repository files are changed.
+
+## Result — 2026-10-09
+
+Coreboot baseline commit: `34ed879d4c7108d83c9d8267d364254304bbba27`.
+The fresh EDK2 build completed, and the paired 64 MiB ROM was packaged with
+the 256 KiB preserved SMMSTORE region. Artifacts:
+
+- `build/reference-baseline/UEFIPAYLOAD.fd` SHA-256:
+  `f656dd345ca3d9beb21ae87964e7b217e9488c6aa046c4d3914b8cf4399b2537`
+- `build/reference-baseline/coreboot.rom` SHA-256:
+  `e0aba4de943e33cd3e70ba5acd3fd382de968e79ae8fd41b4ba3cfa3921a8952`
+- Build logs: `build/reference-baseline/rebuild.log` (EDK2),
+  `build/reference-baseline/package.log` (final ROM packaging).
+
+The initial coreboot-only build reused an old `build/UEFIPAYLOAD.fd`; its ROM
+was moved to `.git/baseline-backup-20261009/coreboot-stale-payload.rom` and is
+not the verified paired artifact. The reference payload recipe's hard-coded
+output directory required the explicit copy above. The subsequent fix commit
+makes the output follow `obj` and records the payload path in `.config`.
+Make reported a future timestamp on a generated dependency file during
+packaging; artifact structure/contents must be checked independently.
+Hardware validation remains pending.

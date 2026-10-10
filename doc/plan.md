@@ -420,3 +420,18 @@ exits successfully with no output. `--no-dereference` is required because both
 trees contain the same intentionally broken
 `EmulatorPkg/Unix/Host/X11IncludeHack` symlink. Without it, GNU diff emits a
 missing-target diagnostic even though the symlinks match.
+
+## Plan update — 2026-10-10 (Europe/Dublin), coreboot reference assets
+
+Copied the requested reference content from `/home/uefi/workspace/coreboot`
+into the current coreboot project: `.claude`, `.config.old`, `3rdparty/fsp`,
+and `3rdparty/blobs`. The third-party trees were synchronized exactly while
+preserving their independent Git metadata. This added the reference
+`GooxiFspBinPkg` FSP binaries and removed five obsolete files directly under
+`3rdparty/blobs/mainboard/asrock`.
+
+Result: `.claude`, `.config.old`, `3rdparty/fsp`, and `3rdparty/blobs` now
+compare with no differences against the reference (excluding `.git`). The
+configured SPC741D8 flash descriptor and ME image are present at the exact
+reference paths and have matching SHA-256 hashes. `.vscode`, `.gitmodules`,
+`util`, `crossgcc`, and `payloads` were not changed.

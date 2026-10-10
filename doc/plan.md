@@ -450,6 +450,27 @@ hardware validation procedure are recorded in
 and an interactive shell remain pending a real board flash and capture; they
 are not claimed from static inspection or build success.
 
+## Plan update — 2026-10-10 03:18 CEST (Europe/Amsterdam)
+
+Final local build result: success, with no compiler/linker errors and no clock
+skew warning after normalizing generated-file timestamps. The flashable image
+is tied to paired coreboot fix commit
+`bd41bb5b57bf75bfbe7982882a94ec18bd472af1`; its embedded revision is
+`bd41bb5b57bf`. It pins EDK2
+`2646640ee3919f57c675ee90f670b63d7756271d`.
+
+- `build/shell-fix/UEFIPAYLOAD.fd` SHA-256:
+  `b76ce84fabe0c1da56a1feb4e529b2221efe7492c8ddd0f5478c043a11dba61f`
+- `build/shell-fix/coreboot.rom` SHA-256:
+  `0dd20ac9c90dba693e331ebc68434dd6b7582edf6ec091aac775498983050722`
+
+The embedded config confirms `CONFIG_SMMSTORE=y`, 256 KiB SMMSTORE,
+`CONFIG_EDK2_HAVE_EFI_SHELL=y`, the exact EDK2 revision, and the object-local
+payload path. The EDK2 build report confirms debug mask `0x8000004F`; the FV
+GUID map confirms the Shell application. This entry is a documentation-only
+follow-up and therefore does not change the revision embedded in the validated
+ROM. Remaining result: hardware flash/cold-boot/warm-boot VGA and SOL capture.
+
 ## Plan update — 2026-10-09 21:56 CEST (Europe/Amsterdam)
 
 Synchronized EDK2 branch `feature/vga` from `/home/uefi/workspace/uefi_edk2`.

@@ -97,6 +97,17 @@ both in `.config` and in the coreboot
 payload gitlink. Build artifacts and logs are under `build/shell-fix/`.
 Baseline artifacts remain under `build/reference-baseline/`.
 
+The final locally validated artifacts built from coreboot fix commit
+`bd41bb5b57bf75bfbe7982882a94ec18bd472af1` are:
+
+- `build/shell-fix/UEFIPAYLOAD.fd`, SHA-256
+  `b76ce84fabe0c1da56a1feb4e529b2221efe7492c8ddd0f5478c043a11dba61f`.
+- `build/shell-fix/coreboot.rom`, SHA-256
+  `0dd20ac9c90dba693e331ebc68434dd6b7582edf6ec091aac775498983050722`.
+- `build/shell-fix/final-build.log`, `UEFIPAYLOAD-report.txt`, and `Guid.xref`
+  contain the build transcript and payload evidence. These generated files are
+  intentionally ignored by Git.
+
 After future EDK2 changes, commit them in the development repository, then run:
 
 ```sh

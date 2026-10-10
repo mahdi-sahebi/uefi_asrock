@@ -435,3 +435,17 @@ compare with no differences against the reference (excluding `.git`). The
 configured SPC741D8 flash descriptor and ME image are present at the exact
 reference paths and have matching SHA-256 hashes. `.vscode`, `.gitmodules`,
 `util`, `crossgcc`, and `payloads` were not changed.
+
+## Plan update — 2026-10-10 (Europe/Dublin), corrected EDK2 reference
+
+The authoritative EDK2 payload checkout is corrected to
+`/home/uefi/workspace/coreboot/payloads/external/edk2/workspace/dasharo`, not
+the `mahdi-sahebi` checkout. The standalone `/home/uefi/workspace/uefi_edk2`
+tree was synchronized from `dasharo`, including generated and ignored
+BaseTools content, while preserving the standalone `.git` database.
+
+Result: a recursive byte comparison with `--no-dereference` and
+`--exclude=.git` exits with status 0 and no output. Both repositories have the
+same committed tree, `26cd7211de7f926b1ee468109a5be38fc180f6c4`, and the
+standalone EDK2 worktree remains clean. Future EDK2 equality checks and
+synchronizations must use the `workspace/dasharo` path.

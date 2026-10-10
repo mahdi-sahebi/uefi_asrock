@@ -449,3 +449,15 @@ Result: a recursive byte comparison with `--no-dereference` and
 same committed tree, `26cd7211de7f926b1ee468109a5be38fc180f6c4`, and the
 standalone EDK2 worktree remains clean. Future EDK2 equality checks and
 synchronizations must use the `workspace/dasharo` path.
+
+## Plan update — 2026-10-10 (Europe/Dublin), VS Code build controls
+
+Added VS Code tasks for `Clean` (`make clean`), `Pristine Build` (`make clean`
+followed by removal of `payloads/external/edk2/workspace/mahdi-sahebi/`), and
+`Build` (`make -j4`). Added matching status-bar button configuration and a
+workspace recommendation for the Simple Task Buttons extension.
+
+Result: the commands are available through **Terminal: Run Task** without an
+extension. With `Condor304.task-buttons` installed, Clean, Pristine Build, and
+Build are also displayed as clickable controls in VS Code's bottom status bar.
+The tasks were configuration-validated but were not executed.

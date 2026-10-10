@@ -1,0 +1,22 @@
+{
+    "buttons": [
+        {
+            "name": "Clean",
+            "task": "Clean",
+            "icon": "$(trash)",
+            "tooltip": "Run make clean"
+        },
+        {
+            "name": "Pristine Build",
+            "task": "Pristine Build",
+            "icon": "$(clear-all)",
+            "tooltip": "Clean and remove the mahdi-sahebi EDK2 workspace"
+        },
+        {
+            "name": "Build",
+            "task": "Build",
+            "icon": "$(tools)",
+            "tooltip": "Run make -j4"
+        }
+    ]
+}

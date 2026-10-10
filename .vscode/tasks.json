@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "make clean",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pristine Build",
+            "type": "shell",
+            "command": "make clean && rm -rf -- payloads/external/edk2/workspace/mahdi-sahebi/ && make -j$(nproc)",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "make -j$(nproc)",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "GIT_ASKPASS": "",
+                    "SSH_ASKPASS": "",
+                    "GIT_TERMINAL_PROMPT": "0"
+                }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

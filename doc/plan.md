@@ -396,3 +396,27 @@ comparison must now report no difference between the two `.config` files.
 The untracked EDK2 host-regression test left in the payload checkout was also
 removed so the coreboot and EDK2 development worktrees are clean. No source
 fix, build, flash, or hardware test is part of this correction.
+
+## Plan update — 2026-10-10 (Europe/Dublin), EDK2 directory equality
+
+The standalone `/home/uefi/workspace/uefi_edk2` directory was synchronized
+from the working reference at
+`/home/uefi/workspace/coreboot/payloads/external/edk2/workspace/mahdi-sahebi`.
+This included ignored/generated BaseTools objects and executables, which were
+the remaining differences despite identical committed source trees. Repository
+`.git` metadata was excluded and preserved independently.
+
+Result: both committed source trees have Git tree
+`26cd7211de7f926b1ee468109a5be38fc180f6c4`, both EDK2 worktrees are clean,
+and:
+
+```sh
+diff -qr --no-dereference --exclude=.git \
+  /home/uefi/workspace/uefi_edk2 \
+  /home/uefi/workspace/coreboot/payloads/external/edk2/workspace/mahdi-sahebi
+```
+
+exits successfully with no output. `--no-dereference` is required because both
+trees contain the same intentionally broken
+`EmulatorPkg/Unix/Host/X11IncludeHack` symlink. Without it, GNU diff emits a
+missing-target diagnostic even though the symlinks match.

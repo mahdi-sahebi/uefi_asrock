@@ -381,3 +381,18 @@ Result: EDK2 baseline committed and content equality verified; coreboot baseline
 prepared for its matching commit and clean build. See `reference-baseline.md`
 for input hashes, provenance, reproduction instructions, and metadata limits.
 No runtime fix has been introduced and no hardware has been flashed.
+
+## Plan update — 2026-10-10 (Europe/Dublin)
+
+The user required the current `.config` to match the working reference
+`/home/uefi/workspace/coreboot/.config` byte-for-byte. The earlier baseline
+used equivalent local board-input paths and immutable EDK2 revision pins, but
+those still produced a textual difference and therefore did not meet this
+requirement.
+
+Result: the descriptor and ME paths, EDK2 branch selector, and edk2-platforms
+branch selector were restored exactly from the reference. `diff` and SHA-256
+comparison must now report no difference between the two `.config` files.
+The untracked EDK2 host-regression test left in the payload checkout was also
+removed so the coreboot and EDK2 development worktrees are clean. No source
+fix, build, flash, or hardware test is part of this correction.
